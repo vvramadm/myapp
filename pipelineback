@@ -1,10 +1,10 @@
 pipeline {
   agent any
   environment {
-    REPO_FRONT = 'myrepo/frontend'
-    REPO_BACK = 'myrepo/backend'
+    REPO_FRONT = 'myapp/frontend'
+    REPO_BACK = 'myapp/backend'
     IMAGE_TAG = "${env.BUILD_NUMBER}-${env.GIT_COMMIT.substring(0,7)}"
-    AWS_REGION = 'ap-south-1'
+    AWS_REGION = 'ap-south-2'
     EKS_CLUSTER = 'my-cluster'
   }
   stages {
