@@ -1,0 +1,33 @@
+pipeline {
+  agent any
+  environment {
+    REPO_FRONT = 'myrepo/frontend'
+    REPO_BACK = 'myrepo/backend'
+    IMAGE_TAG = "${env.BUILD_NUMBER}-${env.GIT_COMMIT.substring(0,7)}"
+    AWS_REGION = 'ap-south-1'
+    EKS_CLUSTER = 'my-cluster'
+  }
+  stages {
+    stage('Checkout') { steps { checkout scm } }
+    stage('Build & Push Docker Images') {
+      steps {
+        script {
+          docker.build("${REPO_FRONT}:${IMAGE_TAG}", "frontend/").push()
+          docker.build("${REPO_BACK}:${IMAGE_TAG}", "backend/").push()
+        }
+      }
+    }
+    stage('Deploy to Kubernetes') {
+      steps {
+        withCredentials([aws(credentialsId: 'aws-credentials', region: env.AWS_REGION)]) {
+          sh "aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION}"
+          sh """
+             sed -i 's|image:.*frontend.*|image: ${REPO_FRONT}:${IMAGE_TAG}|g' helm-chart/frontend-deployment.yaml
+             sed -i 's|image:.*backend.*|image: ${REPO_BACK}:${IMAGE_TAG}|g' helm-chart/backend-deployment.yaml
+             kubectl apply -f helm-chart/
+          """
+        }
+      }
+    }
+  }
+}
