@@ -1,8 +1,8 @@
 pipeline {
   agent any
   environment {
-    REPO_FRONT = 'myapp/frontend'
-    REPO_BACK = 'myapp/backend'
+    REPO_FRONT = 'vvram143/myapp/frontend'
+    REPO_BACK = 'vvram143/myapp/backend'
     IMAGE_TAG = "${env.BUILD_NUMBER}-${env.GIT_COMMIT.substring(0,7)}"
     AWS_REGION = 'ap-south-2'
     EKS_CLUSTER = 'my-cluster'
