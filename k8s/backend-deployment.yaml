@@ -22,6 +22,7 @@ spec:
           - name: DB_PASS
             valueFrom:
               secretKeyRef: { name: db-credentials, key: password }
+<<<<<<< HEAD
 
 ---   
 apiVersion: autoscaling/v1
@@ -36,3 +37,18 @@ spec:
    minReplicas: 1
    maxReplicas: 10
    targetCPUUtilizationPercentage: 75  
+=======
+        envFrom:
+         - ConfigMapRef:
+           name: backend
+
+----
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend
+  namespace: expense
+data:
+   DB_HOST:
+              
+>>>>>>> 8245d9dc9b4ddc4e8bfcbc11ce6bf45f6cb0d997
