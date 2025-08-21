@@ -1,0 +1,46 @@
+# helm-chart/backend-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: frontend }
+  template:
+    metadata:
+      labels: { app: frontend }
+    spec:
+      containers:
+      - name: backend
+        image: vvram143/myapp/frontend:latest
+        ports: [{ containerPort: 80 }]
+        env:
+          
+---
+apiVersion: v1
+kind: Service
+metadata:
+   name: nginx
+spec:
+   selector:
+       app: frontend
+ports:
+  - name: nginx-svc
+    protocol: TCP 
+    port: 80
+    targetPort: 80    
+
+---   
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+   name: nginx
+spec:
+   scaleTargetRef:
+       apiVersion: apps/v1
+       kind: Deployment
+       app: frontend
+   minReplicas: 1
+   maxReplicas: 10
+   targetCPUUtilizationPercentage: 75  
